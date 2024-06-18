@@ -1,0 +1,15 @@
+canvas {
+    border: 1px solid black;
+    background-color: white;
+    display: block; /* スクロールバーを防ぐために追加 */
+    margin: 0 auto; /* センタリング */
+}
+
+body {
+    background-image: repeating-linear-gradient(45deg,
+        #606dbc,
+        #606dbc 10px,
+        #465298 10px,
+        #465298 20px
+    );
+}

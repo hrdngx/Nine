@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name = "viewport" 
+            content="width=device-width",
+                initial-scale="1.0">
+        <title>死亡</title>
+        <style>
+            body{
+                font-family: Arial, sans-serif;
+                text-align: center;
+                background-color: #f4f4f4;
+            }
+            @keyframes slideIn{
+                from{
+                    transform: translateY(-100);
+                    opacity: 0;
+                }
+                to{
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            .container{
+                max-width: 400px;
+                margin: 0 auto;
+                padding: 10px;
+                background-color: rgba(255,255,255,0.8);
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0,0,0,0,1);
+                /*一秒かけてスライド*/
+                animation: slideIn 1s ease-out;
+
+            }
+            h1{
+                color: #e74c3c;
+            }
+            .score{
+                font-size: 2em;
+                margin: 20px 0;
+            }
+            .buttons{
+                margin: 20px 0;
+            }
+            .buttons a{
+                display: inline-block;
+                margin: 0 10px;
+                padding: 10px 20px;
+                color: #fff;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+            .retry{
+                background-color: #3498db;
+            }
+            .home{
+                background-color: #2ecc71;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>ゲーム終了</h1>
+            <p class="score">スコア: <span id="score"></span></p>
+            <div class="buttons">
+                <a href="game.html" class="retry">もう一度</a>
+                <a href="index.html" class="home">ホームに戻る</a>    
+            </div>
+        </div>
+        <script>
+            //ゲーム終了時のスコアを設定
+            window.onload = function(){
+                var score = 99999;
+                document.getElementsById('score').innerText = score;
+            };
+            
+        </script>
+    </body>

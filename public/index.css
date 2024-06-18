@@ -1,0 +1,80 @@
+body{
+    background-color: darkslateblue;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+#title{
+    color: red;
+    font-size: 200px
+}
+
+#form{
+    color: black;
+    font-size: 20px;
+}
+
+@media (max-width: 600px){
+    #title{
+        font-size: 20vw;
+    }
+}
+
+@media (min-width: 601px){
+    #title{
+        font-size: 20vw;
+    }
+}
+@media (min-width: 1201px){
+    #title{
+        font-size: 20vw;
+    }
+}
+
+
+@keyframes rainbow {
+0% { color: red; }
+14% { color: orange; }
+28% { color: yellow; }
+42% { color: green; }
+57% { color: blue; }
+71% { color: indigo; }
+85% { color: violet; }
+100% { color: red; }
+}
+
+.rainbow {
+    display: inline-block;
+    animation: rainbow 2s infinite;
+}
+
+label{
+    font-size: 1.5rem;
+    color: yellow;
+}
+
+button {
+background-color: yellow;
+color: darkblue;
+border: none;
+padding: 10px 20px;
+font-size: 1rem;
+cursor: pointer;
+margin-top: 10px;
+}
+
+button:hover {
+background-color: gold;
+}
+
+input[type="text"] {
+font-size: 1rem;
+padding: 5px;
+}

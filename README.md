@@ -2,7 +2,7 @@
 * マルチプレイ対応ブラウザゲーム
 * ~~Agar.io風ゲーム~~
 
-# [Live Share](https://github.com/skrhm/Nine/blob/main/%E3%83%AA%E3%83%B3%E3%82%AF%E9%9B%86.txt)
+# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?FFFC1A685BA71F3F3FEB62F9440EB2947196)
 * 上記リンクで直接参加可能
 
 ### 要件

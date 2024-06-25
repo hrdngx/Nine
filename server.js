@@ -13,6 +13,7 @@ const PORT = 3000;
 // ゲームの状態
 let players = {};
 let foods = [];
+let name = '';
 
 // クライアント側のファイルを提供するための設定
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,7 +30,7 @@ function generateFood() {
 }
 
 // 初期餌を生成
-for (let i = 0; i < 500; i++) {
+for (let i = 0; i < 100; i++) {
     foods.push(generateFood());
 }
 
@@ -42,7 +43,8 @@ io.on('connection', (socket) => {
         x: Math.floor(Math.random() * (1000 - 200 + 1) + 200),
         y: Math.floor(Math.random() * (1000 - 200 + 1) + 200),
         size: 10,
-        color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
+        color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`,
+        name: name
     };
 
     // 新しいプレイヤーに現在のゲーム状態を送信
@@ -72,7 +74,7 @@ io.on('connection', (socket) => {
                 if (id !== socket.id) {
                     const other = players[id];
                     const distance = Math.hypot(other.x - player.x, other.y - player.y);
-                    if (distance + 5 < player.size && player.size > other.size + 5 && player.size < 80) {
+                    if (distance + 5 < player.size && player.size > other.size + 5 && player.size < 200) {
                         player.size += other.size / 5;
                         delete players[id];
                         io.to(id).emit('respawn');
@@ -85,6 +87,11 @@ io.on('connection', (socket) => {
         }
     });
 
+    /*
+    socket.on('newPlayerName', (data) => {
+        players[socket.id].name = data.name;
+    });*/
+
     // 切断時の処理
     socket.on('disconnect', () => {
         delete players[socket.id];
@@ -95,7 +102,7 @@ io.on('connection', (socket) => {
 
 // 餌を周期的に追加(500ms)
 setInterval(() => {
-    if (foods.length < 500) {
+    if (foods.length < 100) {
         const newFood = generateFood();
         foods.push(newFood);
         io.emit('newFood', newFood);

@@ -2,7 +2,6 @@ const socket = io();
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-
 let currentPlayer = {
     x: 40,
     y: 30,
@@ -11,10 +10,25 @@ let currentPlayer = {
     color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
 };
 
-
 let players = {};
 let foods = [];
 let myname;
+
+function getQueryParam() {
+    var urlParams = new URLSearchParams(window.location.search);
+    myname = urlParams.get('name');
+
+    console.log(myname);
+
+    return myname
+}
+
+//getQueryParam();
+
+// 名前をサーバーに送信
+//socket.emit('newPlayerName', getQueryParam());
+socket.emit('newPlayerName', getQueryParam());
+
 
 socket.on('init', data => {
     players = data.players;
@@ -44,20 +58,12 @@ socket.on('removePlayer', id => {
 });
 
 socket.on('respawn', () => {
-    alert('You got eaten!');
+    alert('あんた食べられたよ');
     currentPlayer.size = 10;
     currentPlayer.x = Math.floor(Math.random() * 1600);
     currentPlayer.y = Math.floor(Math.random() * 1200);
     socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y }); // リスポーン後の位置をサーバーに送信
 });
-
-function getQueryParam(){
-    var urlParams = new URLSearchParams(window.location.search);
-    myname = urlParams.get('name');
-}
-
-// 名前を取得する
-getQueryParam();
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -68,16 +74,17 @@ function render() {
     foods.forEach(food => {
         renderFood(food, offsetX, offsetY);
     });
-    
+
+    //renderPlayer(currentPlayer,offsetX,offsetY,myname);
+    renderPlayer(currentPlayer, offsetX, offsetY, null);
+
     Object.keys(players).forEach(id => {
         const player = players[id];
-       // if(id==socket.id){
-            renderPlayer(player, offsetX, offsetY, myname);
-            //renderPlayer(player, offsetX, offsetY, id);
+        // if(id==socket.id){
+        renderPlayer(player, offsetX, offsetY, myname);
+        //renderPlayer(player, offsetX, offsetY, id);
         //}
     });
-
-    renderPlayer(currentPlayer,offsetX,offsetY,null);
 }
 
 function renderPlayer(player, offsetX, offsetY, id) {
@@ -89,7 +96,7 @@ function renderPlayer(player, offsetX, offsetY, id) {
     ctx.fillStyle = hColor(player.color);
     if (id) {
         // ctx.fillText(`${id.substring(0, 5)}`, player.x + offsetX - 20, player.y + offsetY + 3);
-        //ctx.fillText(myname, player.x + offsetX - 20, player.y + offsetY + 3);
+        ctx.fillText(player.name, player.x + offsetX - 20, player.y + offsetY + 3);
     }
 }
 
@@ -120,6 +127,7 @@ document.addEventListener('keyup', (event) => {
 });
 
 function gameLoop() {
+
     let moved = false;
 
     if (keyState['ArrowUp']) {
@@ -151,6 +159,15 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// window size 変更時
+window.addEventListener('resize', resizeCanvas, false);
+function resizeCanvas() {
+    // canvas.width = window.innerWidth;
+    // canvas.height = window.innerHeight;
+    canvas.width = document.documentElement.clientWidth
+    canvas.height = document.documentElement.clientHeight;
+}
+
 gameLoop();
 
 function hColor(color) {
@@ -160,15 +177,11 @@ function hColor(color) {
     if (!isNaN(R + G + B) && 0 <= R && R <= 255 && 0 <= G && G <= 255 && 0 <= B && B <= 255) {
         var max = Math.max(R, Math.max(G, B));
         var min = Math.min(R, Math.min(G, B));
-
         var sum = max + min;
-
         var newR = sum - R;
         var newG = sum - G;
         var newB = sum - B;
-
         var hColor = `rgb(${newR}, ${newG}, ${newB})`;
-
         return hColor;
     } else {
         return `rgb(0,0,0)`;

@@ -1,15 +1,30 @@
 canvas {
     border: 1px solid black;
     background-color: white;
-    display: block; /* スクロールバーを防ぐために追加 */
-    margin: 0 auto; /* センタリング */
+    display: block;
+    /* スクロールバーを防ぐために追加 */
+    margin: 0 auto;
+    /* センタリング */
+    padding: 0px;
 }
 
 body {
+    margin: 0px;
     background-image: repeating-linear-gradient(45deg,
-        #606dbc,
-        #606dbc 10px,
-        #465298 10px,
-        #465298 20px
-    );
+            #606dbc,
+            #606dbc 10px,
+            #465298 10px,
+            #465298 20px);
+}
+
+html, body {
+    scrollbar-width: none;
+    /*Firefox対応のスクロールバー非表示コード*/
+    -ms-overflow-style: none;
+    /*Internet Explore対応のスクロールバー非表示コード*/
+}
+
+html::-webkit-scrollbar {
+    display: none;
+    /*Google Chrome、Safari、Microsoft Edge対応のスクロールバー非表示コード*/
 }

@@ -1,0 +1,40 @@
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #c2bdbd;
+    font-family: 'Courier New', Courier, monospace;
+}
+button{
+    /* ブラウザ特有のスタイルを無効に */
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* 整える */
+  margin: 1em 0; /* 前後の隙間 */
+  padding: 0.6em 1em; /* 塗りの余白 */
+  font-size: 2em; /* フォントサイズ */
+  background-color: #252627f0; /* 背景色 */
+  color: #ffffff; /* テキストカラー */
+  cursor: pointer; /* カーソルを指マークに */
+  border-radius: 3px; /* 角の丸み */
+  border: 0; /* 枠線を消す */
+  transition: 0.3s; /* ホバーの変化を滑らかに */
+}
+button:hover{
+    background-color: rgb(186, 186, 186);
+}
+.screen {
+    text-align: center;
+}
+.high-score {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+.game-over {
+    font-size: 3em;
+}

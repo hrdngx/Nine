@@ -1,10 +1,11 @@
 const socket = io();
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const music = new Audio('sounds/gameover.mp3');//SE
 
 let currentPlayer = {
-    x: 40,
-    y: 30,
+    x: Math.floor(Math.random() * (1000 - 200 + 1) + 200),
+    y: Math.floor(Math.random() * (1000 - 200 + 1) + 200),
     size: 10,
     speed: 2,
     color: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
@@ -12,6 +13,7 @@ let currentPlayer = {
 
 let players = {};
 let foods = [];
+let poisons = [];
 let myname;
 
 function getQueryParam() {
@@ -29,21 +31,27 @@ function getQueryParam() {
 //socket.emit('newPlayerName', getQueryParam());
 socket.emit('newPlayerName', getQueryParam());
 
-
 socket.on('init', data => {
     players = data.players;
     foods = data.foods;
+    poisons = data.poisons;
     render();
 });
 
 socket.on('update', data => {
     players = data.players;
     foods = data.foods;
+    poisons = data.poisons;
     render();
 });
 
 socket.on('newFood', food => {
     foods.push(food);
+    render();
+});
+
+socket.on('newPoison',poison =>{
+    poisons.push(poison);
     render();
 });
 
@@ -59,10 +67,22 @@ socket.on('removePlayer', id => {
 
 socket.on('respawn', () => {
     alert('あんた食べられたよ');
+
+     
+    //死亡（GameOver.htmlに遷移）
+    var point = 1000;
+    gameoverpoint(point);
+
     currentPlayer.size = 10;
     currentPlayer.x = Math.floor(Math.random() * 1600);
     currentPlayer.y = Math.floor(Math.random() * 1200);
     socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y }); // リスポーン後の位置をサーバーに送信
+
+    //音
+    music.load();
+    music.currentTime = 0;//音リセット
+    music.play(); //再生
+
 });
 
 function render() {
@@ -75,15 +95,16 @@ function render() {
         renderFood(food, offsetX, offsetY);
     });
 
+    poisons.forEach(poison => {
+        renderPoison(poison, offsetX, offsetY);
+    });
+    
     //renderPlayer(currentPlayer,offsetX,offsetY,myname);
-    renderPlayer(currentPlayer, offsetX, offsetY, null);
+    //renderPlayer(currentPlayer, offsetX, offsetY, null);
 
     Object.keys(players).forEach(id => {
-        const player = players[id];
-        // if(id==socket.id){
-        renderPlayer(player, offsetX, offsetY, myname);
-        //renderPlayer(player, offsetX, offsetY, id);
-        //}
+        let player = players[id];
+        renderPlayer(player, offsetX, offsetY, id);
     });
 }
 
@@ -107,6 +128,13 @@ function renderFood(food, offsetX = 0, offsetY = 0) {
     ctx.fill();
 }
 
+function renderPoison(poison, offsetX = 0, offsetY = 0) {
+    ctx.beginPath();
+    ctx.arc(poison.x + offsetX, poison.y + offsetY, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgb(0, 0, 0)`;
+    ctx.fill();
+}
+
 const keyState = {
     'ArrowUp': false,
     'ArrowDown': false,
@@ -125,6 +153,27 @@ document.addEventListener('keyup', (event) => {
         keyState[event.key] = false;
     }
 });
+
+// Space =================================================================
+// document.addEventListener('keypress', (event) => {
+//     if(event.key === 'Space'){
+//         dropPoison(); // 毒を配置
+//     }
+// });
+
+// function dropPoison() {
+//     const poison = {
+//         x: currentPlayer.x,
+//         y: currentPlayer.y,
+//         color: currentPlayer.color,
+//         size: currentPlayer.size,
+//     };
+//     currentPlayer.size -= poison.size;
+//     poisons.push(poison);
+//     socket.emit('newPoison', poison);
+// }
+
+//========================================================================
 
 function gameLoop() {
 
@@ -162,14 +211,13 @@ function gameLoop() {
 // window size 変更時
 window.addEventListener('resize', resizeCanvas, false);
 function resizeCanvas() {
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
-    canvas.width = document.documentElement.clientWidth
+    canvas.width = document.documentElement.clientWidth;
     canvas.height = document.documentElement.clientHeight;
 }
 
 gameLoop();
 
+// Color Create
 function hColor(color) {
     var rgbVal = color.slice(4, -1);
     var [R, G, B] = rgbVal.split(',').map(Number);
@@ -186,4 +234,11 @@ function hColor(color) {
     } else {
         return `rgb(0,0,0)`;
     }
+}
+
+// Game Over
+function gameoverpoint(point){
+    var gameSetPoint = point;
+    window.location.href = `GameOver.html?score=${score}`;
+
 }

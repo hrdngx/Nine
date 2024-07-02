@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="GameOver.css">
+    <title>Game Over Screen</title>
+</head>
+
+<body>
+    <div id="screen">
+        <script>
+            //URLからスコアを取得
+            function getScore() {
+                const point = new URLSearchParams(window.location.search);
+                return point.get('score');
+            }
+
+            //スコアを表示する関す
+            function displayScore() {
+                const score = getScore();
+                if (score !== null) {
+                    document.getElementById('score').textContent = `SCORE: ${score}`;
+                } else {
+                    document.getElementById('score').textContent = "You are a debacker, aren't you?";
+                }
+            }
+            window.onload = displayScore;
+        </script>
+
+        <h1 id="game-over">GAME OVER</h1>
+        <h3 id="score">Score: </h3>
+        <button id="button" onclick="location.href='./game.html'">RETRY!</button>
+        <button id="button" onclick="location.href='./index.html'">トップに戻る</button>
+    </div>
+</body>
+
+</html>

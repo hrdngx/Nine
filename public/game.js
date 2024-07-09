@@ -1,7 +1,7 @@
 const socket = io();
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const music = new Audio('sounds/gameover.mp3');//SE
+const music = new Audio('sounds/gameover.mp3'); // SE
 
 let currentPlayer = {
     x: Math.floor(Math.random() * (1000 - 200 + 1) + 200),
@@ -15,6 +15,7 @@ let players = {};
 let foods = [];
 let poisons = [];
 let myname;
+let color;
 
 function getQueryParam() {
     var urlParams = new URLSearchParams(window.location.search);
@@ -25,16 +26,20 @@ function getQueryParam() {
     return myname
 }
 
-//getQueryParam();
-
 // 名前をサーバーに送信
-//socket.emit('newPlayerName', getQueryParam());
+// socket.emit('newPlayerName', getQueryParam());
 socket.emit('newPlayerName', getQueryParam());
 
 socket.on('init', data => {
     players = data.players;
     foods = data.foods;
     poisons = data.poisons;
+    render();
+});
+
+socket.on('you', data => {
+    currentPlayer.x = data.x;
+    currentPlayer.y = data.y;
     render();
 });
 
@@ -50,7 +55,7 @@ socket.on('newFood', food => {
     render();
 });
 
-socket.on('newPoison',poison =>{
+socket.on('newPoison', poison => {
     poisons.push(poison);
     render();
 });
@@ -68,28 +73,30 @@ socket.on('removePlayer', id => {
 socket.on('respawn', () => {
     alert('あんた食べられたよ');
 
-     
-    //死亡（GameOver.htmlに遷移）
-    var point = 1000;
-    gameoverpoint(point);
+    // SEを再生
+    music.load(); // 読込
+    music.currentTime = 0; // 再生位置
+    music.play(); // 再生
 
-    currentPlayer.size = 10;
-    currentPlayer.x = Math.floor(Math.random() * 1600);
-    currentPlayer.y = Math.floor(Math.random() * 1200);
-    socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y }); // リスポーン後の位置をサーバーに送信
+    // 死亡（GameOver.htmlに遷移）
+    var score = 1000;
+    gameOver(score);
 
-    //音
-    music.load();
-    music.currentTime = 0;//音リセット
-    music.play(); //再生
-
+    // リスポーン後の位置をサーバーに送信
+    // currentPlayer.size = 10;
+    // currentPlayer.x = Math.floor(Math.random() * 1600);
+    // currentPlayer.y = Math.floor(Math.random() * 1200);
+    // socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y });
 });
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const offsetX = canvas.width / 2 - currentPlayer.x;
-    const offsetY = canvas.height / 2 - currentPlayer.y;
+    //const offsetX = canvas.width / 2 - currentPlayer.x;
+    //const offsetY = canvas.height / 2 - currentPlayer.y;
+
+    const offsetX = Math.max(Math.min(canvas.width / 2 - currentPlayer.x,0),canvas.width - 1600)
+    const offsetY = Math.max(Math.min(canvas.height / 2 - currentPlayer.y,0),canvas.height- 1200)
 
     foods.forEach(food => {
         renderFood(food, offsetX, offsetY);
@@ -98,7 +105,7 @@ function render() {
     poisons.forEach(poison => {
         renderPoison(poison, offsetX, offsetY);
     });
-    
+
     //renderPlayer(currentPlayer,offsetX,offsetY,myname);
     //renderPlayer(currentPlayer, offsetX, offsetY, null);
 
@@ -110,7 +117,11 @@ function render() {
 
 function renderPlayer(player, offsetX, offsetY, id) {
     ctx.beginPath();
-    ctx.arc(player.x + offsetX, player.y + offsetY, player.size, 0, 2 * Math.PI);
+    
+    if(player.size > 0){
+        ctx.arc(player.x + offsetX, player.y + offsetY, player.size, 0, 2 * Math.PI);
+    }
+
     ctx.fillStyle = player.color;
     ctx.fill();
     ctx.closePath();
@@ -118,6 +129,7 @@ function renderPlayer(player, offsetX, offsetY, id) {
     if (id) {
         // ctx.fillText(`${id.substring(0, 5)}`, player.x + offsetX - 20, player.y + offsetY + 3);
         ctx.fillText(player.name, player.x + offsetX - 20, player.y + offsetY + 3);
+        color = player.color;
     }
 }
 
@@ -131,7 +143,7 @@ function renderFood(food, offsetX = 0, offsetY = 0) {
 function renderPoison(poison, offsetX = 0, offsetY = 0) {
     ctx.beginPath();
     ctx.arc(poison.x + offsetX, poison.y + offsetY, 10, 0, 2 * Math.PI);
-    ctx.fillStyle = `rgb(0, 0, 0)`;
+    ctx.fillStyle = poison.color;
     ctx.fill();
 }
 
@@ -139,7 +151,7 @@ const keyState = {
     'ArrowUp': false,
     'ArrowDown': false,
     'ArrowLeft': false,
-    'ArrowRight': false
+    'ArrowRight': false,
 };
 
 document.addEventListener('keydown', (event) => {
@@ -155,52 +167,64 @@ document.addEventListener('keyup', (event) => {
 });
 
 // Space =================================================================
-// document.addEventListener('keypress', (event) => {
-//     if(event.key === 'Space'){
-//         dropPoison(); // 毒を配置
-//     }
-// });
+/*
+function dropPoison() {
+    // Poison Model
+    const poison = {
+        x: currentPlayer.x,
+        y: currentPlayer.y,
+        size: 25,
+        color: color
+    }
 
-// function dropPoison() {
-//     const poison = {
-//         x: currentPlayer.x,
-//         y: currentPlayer.y,
-//         color: currentPlayer.color,
-//         size: currentPlayer.size,
-//     };
-//     currentPlayer.size -= poison.size;
-//     poisons.push(poison);
-//     socket.emit('newPoison', poison);
-// }
+    console.log('Dropping poison');
+    socket.emit('dropPoison', {x: currentPlayer.x, y: currentPlayer.y, size: poison.size, color: currentPlayer.color});
+}
 
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+        console.log('dropPoison');
+        dropPoison();
+    }
+});
+*/
 //========================================================================
 
 function gameLoop() {
 
     let moved = false;
 
-    if (keyState['ArrowUp']) {
-        currentPlayer.y -= currentPlayer.speed;
-        moved = true;
-    }
 
-    if (keyState['ArrowDown']) {
-        currentPlayer.y += currentPlayer.speed;
-        moved = true;
-    }
+    if (true) {
 
-    if (keyState['ArrowLeft']) {
-        currentPlayer.x -= currentPlayer.speed;
-        moved = true;
-    }
+        /*
+        if(Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size)) && Math.max(0, Math.min(currentPlayer.y, 1600 - currentPlayer.size))){
+            moved = false;
+        }*/
 
-    if (keyState['ArrowRight']) {
-        currentPlayer.x += currentPlayer.speed;
-        moved = true;
-    }
+        if (keyState['ArrowUp']) {
+            currentPlayer.y -= currentPlayer.speed;
+            moved = true;
+        }
 
-    if (moved) {
-        socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y });
+        if (keyState['ArrowDown']) {
+            currentPlayer.y += currentPlayer.speed;
+            moved = true;
+        }
+
+        if (keyState['ArrowLeft']) {
+            currentPlayer.x -= currentPlayer.speed;
+            moved = true;
+        }
+
+        if (keyState['ArrowRight']) {
+            currentPlayer.x += currentPlayer.speed;
+            moved = true;
+        }
+
+        if (moved) {
+            socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y });
+        }
     }
 
     render();
@@ -237,8 +261,6 @@ function hColor(color) {
 }
 
 // Game Over
-function gameoverpoint(point){
-    var gameSetPoint = point;
-    window.location.href = `GameOver.html?score=${score}`;
-
+function gameOver() {
+    window.location.href = `GameOver.html?score=${players[socket.id].size}`;
 }

@@ -7,10 +7,8 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const path = require('path');
-const { count } = require('console');
 
 const PORT = 3000;
-
 
 // ゲームの状態
 let players = {};
@@ -43,6 +41,18 @@ function generatePoison() {
     };
 }
 
+/*
+function userPoison(x, y, size, color) {
+    return {
+        x: x,
+        y: y,
+        id: Math.floor(Math.random() * 100000),
+        size: size,
+        color: color
+    };
+}
+*/
+
 // 初期餌を生成
 for (let i = 0; i < 100; i++) {
     foods.push(generateFood());
@@ -68,6 +78,7 @@ io.on('connection', (socket) => {
 
     // 新しいプレイヤーに現在のゲーム状態を送信
     socket.emit('init', { players, foods, poisons });
+    socket.emit('you', {x: players[socket.id].x, y: players[socket.id].y});
 
     // 他のプレイヤーに新しいプレイヤーを通知
     socket.broadcast.emit('newPlayer', { id: socket.id, player: players[socket.id] });
@@ -75,13 +86,14 @@ io.on('connection', (socket) => {
     socket.on('move', (data) => {
         const player = players[socket.id];
         if (player) {
+            // 座標の最大値
             player.x = Math.max(0, Math.min(data.x, 1600 - player.size));
             player.y = Math.max(0, Math.min(data.y, 1200 - player.size));
 
             // 餌を食べる処理
             foods = foods.filter(food => {
                 const distance = Math.hypot(food.x - player.x, food.y - player.y);
-                if (distance < player.size && player.size < 80) {
+                if (distance < player.size && player.size < 160) {
                     player.size += 1;
                     return false; // 餌を削除
                 }
@@ -115,6 +127,20 @@ io.on('connection', (socket) => {
             io.emit('update', { players, foods, poisons });
         }
     });
+
+    /*
+    // 毒の投下命令を受けた
+    socket.on('dropPoison', (data) =>{
+        poisons.push(userPoison(data.x, data.y, data.size, data.color));
+        players[socket.id].size -= data.size;
+        if (players[socket.id].size <= 0) {
+            delete players[socket.id];
+            socket.emit('respawn');
+        }
+        // 全プレイヤーに状態を同期
+        io.emit('update', { players, foods, poisons });
+    });
+    */
 
     /*
     socket.on('newPlayerName', (data) => {

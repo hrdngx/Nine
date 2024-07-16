@@ -2,8 +2,11 @@
 * マルチプレイ対応ブラウザゲーム
 * ~~Agar.io風ゲーム~~
 
-# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?64C99484EC7D3E9A73CA9D55ED42A47F3AEB)
+# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?4DD89BB50827AFB8E61B3BD5CA32FDC10076)
 * 上記リンクで直接参加可能
+
+## VM
+* 172.18.88.48:3000
 
 ### 要件
 * 使用言語

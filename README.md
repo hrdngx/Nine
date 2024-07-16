@@ -5,6 +5,9 @@
 # [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?A9F224264F008C721A345C7ED6F3F9AD55A6)
 * 上記リンクで直接参加可能
 
+##VM
+* 172.18.88.48
+
 ### 要件
 * 使用言語
   * JavaScript

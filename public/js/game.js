@@ -20,7 +20,7 @@ let color;
 function getQueryParam() {
     var urlParams = new URLSearchParams(window.location.search);
     myname = urlParams.get('name');
-    console.log(myname);
+    console.log(myname); // 名前を確認
     return myname
 }
 
@@ -84,8 +84,8 @@ socket.on('respawn', () => {
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const offsetX = Math.max(Math.min(canvas.width / 2 - currentPlayer.x,0),canvas.width - 1600)
-    const offsetY = Math.max(Math.min(canvas.height / 2 - currentPlayer.y,0),canvas.height- 1200)
+    const offsetX = Math.max(Math.min(canvas.width / 2 - currentPlayer.x, 0), canvas.width - 1600) + 30
+    const offsetY = Math.max(Math.min(canvas.height / 2 - currentPlayer.y, 0), canvas.height - 1200) + 30
 
     foods.forEach(food => {
         renderFood(food, offsetX, offsetY);
@@ -95,31 +95,37 @@ function render() {
         renderPoison(poison, offsetX, offsetY);
     });
 
-    //renderPlayer(currentPlayer,offsetX,offsetY,myname);
-    //renderPlayer(currentPlayer, offsetX, offsetY, null);
-
     Object.keys(players).forEach(id => {
         let player = players[id];
-        renderPlayer(player, offsetX, offsetY, id);
+        //renderPlayer(player, offsetX, offsetY, id);
+        renderPlayer(player, offsetX, offsetY, player.name);
     });
 }
 
-function renderPlayer(player, offsetX, offsetY, id) {
+function renderPlayer(player, offsetX, offsetY, name) {
     ctx.beginPath();
-    
-    if(player.size > 0){
+
+    // サイズが"0"より大きいなら
+    if (player.size > 0) {
+        // 本体
         ctx.arc(player.x + offsetX, player.y + offsetY, player.size, 0, 2 * Math.PI);
+        ctx.fillStyle = player.color;
+        ctx.fill();
+        ctx.closePath();
+
+        // 名前
+        ctx.fillStyle = hColor(player.color);
+        ctx.fillText(name, player.x + offsetX - 25, player.y + offsetY + 3);
     }
 
-    ctx.fillStyle = player.color;
-    ctx.fill();
-    ctx.closePath();
-    ctx.fillStyle = hColor(player.color);
-    if (id) {
-        // ctx.fillText(`${id.substring(0, 5)}`, player.x + offsetX - 20, player.y + offsetY + 3);
-        ctx.fillText(player.name, player.x + offsetX - 20, player.y + offsetY + 3);
-        color = player.color;
-    }
+    // if (name != null) {
+    //     // ctx.fillText(`${id.substring(0, 5)}`, player.x + offsetX - 20, player.y + offsetY + 3);
+    //     ctx.fillText(player.name, player.x + offsetX - 20, player.y + offsetY + 3);
+    //     color = player.color;
+    // } else {
+    //     ctx.fillText("hoge", player.x + offsetX - 20, player.y + offsetY + 3);
+    //     color = 'red';
+    // }
 }
 
 function renderFood(food, offsetX = 0, offsetY = 0) {
@@ -183,52 +189,38 @@ function gameLoop() {
 
     if (true) {
 
-        if(Math.max(0, Math.min(currentPlayer.y, 1600 - currentPlayer.size))){
-            
+        if (Math.max(0, Math.min(currentPlayer.y, 1600 - currentPlayer.size))) {
             if (keyState['ArrowUp']) {
                 currentPlayer.y -= currentPlayer.speed;
                 moved = true;
             }
-
         }
 
-        check=(x)=>{
-            if(x>=1600)  return false;
-            
-            return true;
-        }
-        
-        //if(Math.min(currentPlayer.y, 1600 - currentPlayer.size)){
-        if(Math.max(1600- currentPlayer.size, currentPlayer.y)){
-        //if(check(Math.max(1600, currentPlayer.y))){
+        if (Math.max(0, Math.min(currentPlayer.y, 1600 - currentPlayer.size)) != 1600 - currentPlayer.size) {
             if (keyState['ArrowDown']) {
                 currentPlayer.y += currentPlayer.speed;
                 moved = true;
             }
         }
-        
-        if(Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size))){
+
+        if (Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size))) {
             if (keyState['ArrowLeft']) {
                 currentPlayer.x -= currentPlayer.speed;
                 moved = true;
-             }
+            }
         }
-        
 
-        if(Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size))==1600- currentPlayer.size){
+        if (Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size)) != 1600 - currentPlayer.size) {
             if (keyState['ArrowRight']) {
                 currentPlayer.x += currentPlayer.speed;
                 moved = true;
             }
         }
-        
 
         if (moved) {
             socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y });
         }
-
     }
-    
 
     render();
 
@@ -265,5 +257,5 @@ function hColor(color) {
 
 // Game Over
 function gameOver() {
-    window.location.href = `GameOver.html?score=${players[socket.id].size}`;
+    window.location.href = `gameover.html?score=${players[socket.id].size}`;
 }

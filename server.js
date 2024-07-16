@@ -15,7 +15,6 @@ const PORT = 3000;
 let players = {};
 let foods = [];
 let poisons = [];
-let name = '';
 
 // クライアント側のファイルを提供するための設定
 app.use(express.static(path.join(__dirname, 'public')));
@@ -68,7 +67,10 @@ for (let i = 0; i < 30; i++) {
 
 // クライアントからの接続を待ち受ける
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+    // 名前を取得
+    const name = socket.handshake.query.name || 'Unknown';
+
+    console.log('A user connected:', name, socket.id);
 
     // 新しいプレイヤーを追加
     players[socket.id] = {
@@ -145,11 +147,9 @@ io.on('connection', (socket) => {
     });
     */
 
-    /*
-    socket.on('newPlayerName', (data) => {
-        players[socket.id].name = data.name;
-    });
-    */
+    // socket.on('newPlayerName', (data) => {
+    //     players[socket.id].name = data.name;
+    // });
 
     // 切断時の処理
     socket.on('disconnect', () => {

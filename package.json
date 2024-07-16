@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "express": "^4.19.2",
+    "express-favicon": "^2.0.4",
+    "serve-favicon": "^2.5.0",
     "socket.io": "^4.7.5",
     "ws": "^8.16.0"
   }

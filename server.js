@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const favicon = require('serve-favicon')
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +19,8 @@ let name = '';
 
 // クライアント側のファイルを提供するための設定
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+
 
 // 餌を生成する関数
 function generateFood() {
@@ -104,7 +107,7 @@ io.on('connection', (socket) => {
             poisons = poisons.filter(poison => {
                 const distance = Math.hypot(poison.x - player.x, poison.y - player.y);
                 if (distance < player.size && poison.size < player.size) {
-                    player.size /= 1.5;
+                    player.size = Math.floor(player.size / 1.5);
                     return false; // 毒を削除
                 }
                 return true;

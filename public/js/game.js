@@ -20,9 +20,7 @@ let color;
 function getQueryParam() {
     var urlParams = new URLSearchParams(window.location.search);
     myname = urlParams.get('name');
-
     console.log(myname);
-
     return myname
 }
 
@@ -78,22 +76,13 @@ socket.on('respawn', () => {
     music.currentTime = 0; // 再生位置
     music.play(); // 再生
 
-    // 死亡（GameOver.htmlに遷移）
-    var score = 1000;
+    // 死亡（gameover.htmlに遷移）
+    var score = players.size;
     gameOver(score);
-
-    // リスポーン後の位置をサーバーに送信
-    // currentPlayer.size = 10;
-    // currentPlayer.x = Math.floor(Math.random() * 1600);
-    // currentPlayer.y = Math.floor(Math.random() * 1200);
-    // socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y });
 });
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    //const offsetX = canvas.width / 2 - currentPlayer.x;
-    //const offsetY = canvas.height / 2 - currentPlayer.y;
 
     const offsetX = Math.max(Math.min(canvas.width / 2 - currentPlayer.x,0),canvas.width - 1600)
     const offsetY = Math.max(Math.min(canvas.height / 2 - currentPlayer.y,0),canvas.height- 1200)
@@ -176,11 +165,9 @@ function dropPoison() {
         size: 25,
         color: color
     }
-
     console.log('Dropping poison');
     socket.emit('dropPoison', {x: currentPlayer.x, y: currentPlayer.y, size: poison.size, color: currentPlayer.color});
 }
-
 document.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
         console.log('dropPoison');
@@ -194,38 +181,54 @@ function gameLoop() {
 
     let moved = false;
 
-
     if (true) {
 
-        /*
-        if(Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size)) && Math.max(0, Math.min(currentPlayer.y, 1600 - currentPlayer.size))){
-            moved = false;
-        }*/
+        if(Math.max(0, Math.min(currentPlayer.y, 1600 - currentPlayer.size))){
+            
+            if (keyState['ArrowUp']) {
+                currentPlayer.y -= currentPlayer.speed;
+                moved = true;
+            }
 
-        if (keyState['ArrowUp']) {
-            currentPlayer.y -= currentPlayer.speed;
-            moved = true;
         }
 
-        if (keyState['ArrowDown']) {
-            currentPlayer.y += currentPlayer.speed;
-            moved = true;
+        check=(x)=>{
+            if(x>=1600)  return false;
+            
+            return true;
         }
+        
+        //if(Math.min(currentPlayer.y, 1600 - currentPlayer.size)){
+        if(Math.max(1600- currentPlayer.size, currentPlayer.y)){
+        //if(check(Math.max(1600, currentPlayer.y))){
+            if (keyState['ArrowDown']) {
+                currentPlayer.y += currentPlayer.speed;
+                moved = true;
+            }
+        }
+        
+        if(Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size))){
+            if (keyState['ArrowLeft']) {
+                currentPlayer.x -= currentPlayer.speed;
+                moved = true;
+             }
+        }
+        
 
-        if (keyState['ArrowLeft']) {
-            currentPlayer.x -= currentPlayer.speed;
-            moved = true;
+        if(Math.max(0, Math.min(currentPlayer.x, 1600 - currentPlayer.size))==1600- currentPlayer.size){
+            if (keyState['ArrowRight']) {
+                currentPlayer.x += currentPlayer.speed;
+                moved = true;
+            }
         }
-
-        if (keyState['ArrowRight']) {
-            currentPlayer.x += currentPlayer.speed;
-            moved = true;
-        }
+        
 
         if (moved) {
             socket.emit('move', { x: currentPlayer.x, y: currentPlayer.y });
         }
+
     }
+    
 
     render();
 

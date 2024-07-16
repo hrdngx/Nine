@@ -2,7 +2,7 @@
 * マルチプレイ対応ブラウザゲーム
 * ~~Agar.io風ゲーム~~
 
-# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?158F91064359E3FE68B1F00A24D0050046B1)
+# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?A9F224264F008C721A345C7ED6F3F9AD55A6)
 * 上記リンクで直接参加可能
 
 ### 要件

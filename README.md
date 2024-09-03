@@ -1,10 +1,9 @@
+# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?D399E7B20350CC36AAD709162C1D5D127100)
+# [Game Link](http://172.18.88.48:3000)
+
 # 𝙽𝚒𝚗𝚎
 * マルチプレイ対応ブラウザゲーム
 * ~~Agar.io風ゲーム~~
-
-* クリックで直接参加可能
-# [Live Share](https://prod.liveshare.vsengsaas.visualstudio.com/join?D399E7B20350CC36AAD709162C1D5D127100)
-# [Game Link](http://172.18.88.48:3000)
 
 ### 要件
 * 使用言語

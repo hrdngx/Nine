@@ -13,11 +13,11 @@
   * Socket.io
 
 ### 作業方法
-pm2 start server.js
-pm2 list
-pm2 restart
-pm2 stop
-pm2 log
+  pm2 start server.js
+  pm2 list
+  pm2 restart
+  pm2 stop
+  pm2 log
 
 ### Member
 * [Dakichans](https://github.com/Dakichans "Dakichans")

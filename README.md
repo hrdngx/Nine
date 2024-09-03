@@ -14,9 +14,9 @@
 
 ### 作業方法
 * pm2 start server.js
+* pm2 stop server.js
+* pm2 restart server.js
 * pm2 list
-* pm2 restart
-* pm2 stop
 * pm2 log
 
 ### Member

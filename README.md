@@ -13,8 +13,12 @@
   * Socket.io
 
 ### 作業方法
-Gitがわからなければブラウザで作業すること
-   
+pm2 start server.js
+pm2 list
+pm2 restart
+pm2 stop
+pm2 log
+
 ### Member
 * [Dakichans](https://github.com/Dakichans "Dakichans")
 * [fuuya1341](https://github.com/fuuya1341 "fuuya1341")

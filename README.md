@@ -9,9 +9,10 @@
   * HTML
   * CSS
 
-* ライブラリ
-  * Node.js
-  * Socket.io
+* ライブラリ - 用途
+  * Node.js - Server
+  * Socket.io - Socket通信
+  * PM2 - 自動再起動
 
 ## PM2 コマンド
 ```

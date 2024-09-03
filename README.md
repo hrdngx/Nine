@@ -6,15 +6,21 @@
 ## 要件
 * 使用言語
   * JavaScript
+  * HTML
+  * CSS
+
+* ライブラリ
   * Node.js
   * Socket.io
 
-## 起動, 停止, 管理
-* pm2 start server.js
-* pm2 stop server.js
-* pm2 restart server.js
-* pm2 list
-* pm2 log
+## PM2 コマンド
+```
+pm2 start server.js
+pm2 stop server.js
+pm2 restart server.js
+pm2 list
+pm2 log
+```
 
 ## Member
 * [Dakichans](https://github.com/Dakichans "Dakichans")

@@ -10,12 +10,12 @@
 
 <body>
     <div id="screen">
-        <script src="gameover.js"></script>
+        <script src="./js/gameover.js"></script>
         
         <h1 id="game-over">GAME OVER</h1>
         <h2 id="score">Score: </h2>
-        <button id="button" onclick="location.href='./game.html'">RETRY!</button>
-        <button id="button" onclick="location.href='./index.html'">トップに戻る</button>
+        <button id="button" onclick="location.href='game.html?name=' + getName()">RETRY!</button>
+        <button id="button" onclick="location.href='index.html'">トップに戻る</button>
     </div>
 </body>
 

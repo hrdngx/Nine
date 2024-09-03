@@ -1,7 +1,7 @@
 const socket = io();
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const music = new Audio('sounds/gameover.mp3'); // SE
+// const music = new Audio('sounds/gameover.mp3'); // SE
 
 let currentPlayer = {
     x: Math.floor(Math.random() * (1000 - 200 + 1) + 200),
@@ -17,15 +17,32 @@ let poisons = [];
 let myname;
 let color;
 
+/*
 function getQueryParam() {
     var urlParams = new URLSearchParams(window.location.search);
     myname = urlParams.get('name');
-    console.log(myname); // 名前を確認
+    console.log("getQP(game->server): )" + myname); // 名前を確認
+
+    //socket.emit('newPlayerName', myname);
+
     return myname
+}*/
+
+function getQueryParam() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var name = urlParams.get('name');
+    console.log('Name from URL:', name); // デバッグのためにログを追加
+    return name || 'Unknown';
 }
 
+const name = getQueryParam();
+
 // 名前をサーバーに送信
-// socket.emit('newPlayerName', getQueryParam());
+//getQueryParam();
+
+
+
+// 名前をサーバーに送信
 socket.emit('newPlayerName', getQueryParam());
 
 socket.on('init', data => {
@@ -68,17 +85,37 @@ socket.on('removePlayer', id => {
     render();
 });
 
+socket.on('nameUpdated', (name) => {
+    currentPlayer.name = name;
+    console.log('Name updated:', name); // デバッグ用のログ
+    render(); // ユーザー名を反映して再描画
+});
+
+
+
+
 socket.on('respawn', () => {
     alert('あんた食べられたよ');
 
     // SEを再生
-    music.load(); // 読込
-    music.currentTime = 0; // 再生位置
-    music.play(); // 再生
+    // music.load(); // 読込
+    // music.currentTime = 0; // 再生位置
+    // music.play(); // 再生
 
-    // 死亡（gameover.htmlに遷移）
+    // 死亡（gameover.htmlに遷移）win
+    /*
     var score = players.size;
-    gameOver(score);
+    gameOver(score);*/
+    // 現在のプレイヤー情報を取得
+    const currentPlayerData = players[socket.id];
+
+    if (currentPlayerData) {
+        const score = currentPlayerData.size;
+        gameOver(score);
+    } else {
+        console.error('プレイヤーデータが取得できませんでした');
+        gameOver(0); // スコアが取得できなかった場合、スコアを0として扱う
+    }
 });
 
 function render() {
@@ -99,8 +136,30 @@ function render() {
         let player = players[id];
         //renderPlayer(player, offsetX, offsetY, id);
         renderPlayer(player, offsetX, offsetY, player.name);
-    });
+        console.log("renderPlayer: " + player.name);
+    }); // players[id]のデータに名前が格納されていない
 }
+
+
+/*
+function renderPlayer(player, offsetX, offsetY, name) {
+    ctx.beginPath();
+
+    // サイズが"0"より大きいなら
+    if (player.size > 0) {
+        // 本体
+        ctx.arc(player.x + offsetX, player.y + offsetY, player.size, 0, 2 * Math.PI);
+        ctx.fillStyle = player.color;
+        ctx.fill();
+        ctx.closePath();
+
+        // 名前の描画
+        ctx.fillStyle = hColor(player.color);
+        ctx.font = '12px Arial';
+        ctx.fillText(name, player.x + offsetX - 25, player.y + offsetY + 3);
+    }
+}*/
+
 
 function renderPlayer(player, offsetX, offsetY, name) {
     ctx.beginPath();
@@ -113,19 +172,16 @@ function renderPlayer(player, offsetX, offsetY, name) {
         ctx.fill();
         ctx.closePath();
 
-        // 名前
+        // 名前の描画
         ctx.fillStyle = hColor(player.color);
-        ctx.fillText(name, player.x + offsetX - 25, player.y + offsetY + 3);
+        ctx.font = '12px Arial';
+        
+        // テキストの幅を計算
+        const textWidth = ctx.measureText(name).width;
+        
+        // 名前を中央に寄せて描画
+        ctx.fillText(name, player.x + offsetX - textWidth / 2, player.y + offsetY + player.size + 15);
     }
-
-    // if (name != null) {
-    //     // ctx.fillText(`${id.substring(0, 5)}`, player.x + offsetX - 20, player.y + offsetY + 3);
-    //     ctx.fillText(player.name, player.x + offsetX - 20, player.y + offsetY + 3);
-    //     color = player.color;
-    // } else {
-    //     ctx.fillText("hoge", player.x + offsetX - 20, player.y + offsetY + 3);
-    //     color = 'red';
-    // }
 }
 
 function renderFood(food, offsetX = 0, offsetY = 0) {
@@ -227,12 +283,22 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// window size 変更時
+// ゲーム開始時にキャンバスサイズを調整
+window.addEventListener('load', () => {
+    resizeCanvas();
+})
+
+// ウィンドウリサイズ時にキャンバスサイズを調整
 window.addEventListener('resize', resizeCanvas, false);
 function resizeCanvas() {
     canvas.width = document.documentElement.clientWidth;
     canvas.height = document.documentElement.clientHeight;
 }
+
+// 読み込み時に名前の描画
+window.addEventListener('load', () => {
+    
+})
 
 gameLoop();
 
@@ -256,6 +322,14 @@ function hColor(color) {
 }
 
 // Game Over
+/*
 function gameOver() {
     window.location.href = `gameover.html?score=${players[socket.id].size}`;
+}*/
+
+
+function gameOver() {
+    const name = getQueryParam(); // 名前を取得
+    const score = players[socket.id].size; // スコアを取得
+    window.location.href = `gameover.html?score=${score}&name=${encodeURIComponent(name)}`;
 }

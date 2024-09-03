@@ -1,12 +1,17 @@
-// URLからスコアを取得
+// URLからスコアと名前を取得
 function getScore() {
-    const point = new URLSearchParams(window.location.search);
-    return Math.floor(point.get('score'));
+    const params = new URLSearchParams(window.location.search);
+    return Math.floor(params.get('score'));
 }
 
-// スコアを表示する関す
+function getName() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('name');
+}
+
+// スコアを表示する関数
 function displayScore() {
-    const score = Math.floor(getScore())
+    const score = getScore();
     if (score !== null) {
         document.getElementById('score').textContent = `SCORE: ${score}`;
     } else {
@@ -16,3 +21,7 @@ function displayScore() {
 
 // 画面読み込み時にスコアを表示
 window.onload = displayScore;
+
+
+
+

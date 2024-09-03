@@ -68,7 +68,7 @@ for (let i = 0; i < 30; i++) {
 // クライアントからの接続を待ち受ける
 io.on('connection', (socket) => {
     // 名前を取得
-    const name = socket.handshake.query.name || 'Unknown';
+    const name = socket.handshake.query.name || "矢印キーで";
 
     console.log('A user connected:', name, socket.id);
 
@@ -146,10 +146,20 @@ io.on('connection', (socket) => {
         io.emit('update', { players, foods, poisons });
     });
     */
+    
+    /*
+    socket.on('newPlayerName', (data) => {
+         players[socket.id].name = data.name;
+    });*/
 
-    // socket.on('newPlayerName', (data) => {
-    //     players[socket.id].name = data.name;
-    // });
+    socket.on('newPlayerName', (name) => {
+        if (name) {
+            players[socket.id].name = name;
+            socket.emit('nameUpdated', name); // クライアントにユーザー名が更新されたことを通知
+            console.log(`Player name set for ${socket.id}: ${name}`); // デバッグ用のログ
+        }
+    });
+    
 
     // 切断時の処理
     socket.on('disconnect', () => {

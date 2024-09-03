@@ -1,6 +1,7 @@
 var text = "NINE";
 var length = text.length;
 var speed = 200;
+var i = 0;
 
 function typeWriter() {
     if (i < length) {
@@ -13,7 +14,6 @@ function typeWriter() {
     }
 }
 
-var i = 0;
 typeWriter();
 
 // Player Name

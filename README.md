@@ -3,20 +3,20 @@
 * マルチプレイ対応ブラウザゲーム
 * ~~Agar.io風ゲーム~~
 
-### 要件
+## 要件
 * 使用言語
   * JavaScript
   * Node.js
   * Socket.io
 
-### 起動, 停止, 管理
+## 起動, 停止, 管理
 * pm2 start server.js
 * pm2 stop server.js
 * pm2 restart server.js
 * pm2 list
 * pm2 log
 
-### Member
+## Member
 * [Dakichans](https://github.com/Dakichans "Dakichans")
 * [fuuya1341](https://github.com/fuuya1341 "fuuya1341")
 * [kinako11](https://github.com/kinako11 "kinako11")

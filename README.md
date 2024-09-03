@@ -9,7 +9,7 @@
   * Node.js
   * Socket.io
 
-### 作業方法
+### 起動, 停止, 管理
 * pm2 start server.js
 * pm2 stop server.js
 * pm2 restart server.js
